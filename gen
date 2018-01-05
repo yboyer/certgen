@@ -1,0 +1,24 @@
+#!/bin/sh
+
+IP=$1
+
+echo $IP
+
+if [ -z $IP ]; then
+  printf '\033[0;31m'
+  echo 'Error'
+  echo 'Hostnames are missing as a comma,separated,hostnames argument'
+  exit 1
+fi
+
+if [[ ! -f ca.pem ]]; then
+  echo '{"CN":"CA","key":{"algo":"rsa","size":2048}}' | \
+    cfssl gencert -initca - | \
+    cfssljson -bare ca -
+fi
+
+echo '{"CN":"server","hosts":[""],"key":{"algo":"rsa","size":2048}}' | \
+  cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=/ca-config.json -profile=www -hostname="$IP" - | \
+  cfssljson -bare $IP
+
+rm -f *.csr
