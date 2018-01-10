@@ -2,10 +2,8 @@
 
 IP=$1
 
-echo $IP
-
 if [ -z $IP ]; then
-  printf '\033[0;31m'
+  printf '\e[91m'
   echo 'Error'
   echo 'Hostnames are missing as a comma,separated,hostnames argument'
   exit 1
